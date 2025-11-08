@@ -36,12 +36,12 @@ public class PolyglotMessages implements Messages.Implementation {
                 .getString("language", "fr")
                 .toLowerCase();
 
-        try(PluginInspector graph = Reflex.getInspector(plugin)) {
+        try(PluginInspector inspector = Reflex.getInspector(plugin)) {
             final Pattern pattern = Pattern.compile("lang/" + language + "/.*\\.json");
             // fetch all lang files
 
             int previousSize = _messages.size();
-            graph.getResources(pattern).forEach(resource -> this.loadAllMessages(plugin, resource));
+            inspector.getResources(pattern).forEach(resource -> this.loadAllMessages(plugin, resource));
             plugin.getLogger().info("| All messages has been successfully loaded.");
             plugin.getLogger().info("| Number of loaded messages: " + (_messages.size() - previousSize));
         }
