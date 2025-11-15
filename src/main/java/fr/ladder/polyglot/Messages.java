@@ -8,6 +8,10 @@ public abstract class Messages {
     
     private static Implementation implementation;
 
+    private Messages() {
+        throw new IllegalAccessError("This is a static class and cannot be instantiated");
+    }
+
     public static void setImplementation(Implementation impl) {
         implementation = impl;
     }
