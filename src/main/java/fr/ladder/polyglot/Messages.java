@@ -1,6 +1,7 @@
 package fr.ladder.polyglot;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import fr.ladder.reflex.PluginInspector;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
@@ -16,10 +17,14 @@ public abstract class Messages {
         implementation = impl;
     }
     
-    public static void loadAllMessages(JavaPlugin plugin) {
+    public static void loadAllMessages(Plugin plugin, PluginInspector inspector) {
+        implementation.loadAllMessages(plugin, inspector);
+    }
+
+    public static void loadAllMessages(Plugin plugin) {
         implementation.loadAllMessages(plugin);
     }
-    
+
     public static boolean exists(String path) {
         return implementation.exists(path);
     }
@@ -41,9 +46,11 @@ public abstract class Messages {
     }
     
     public interface Implementation {
-        
-        void loadAllMessages(JavaPlugin plugin);
-        
+
+        void loadAllMessages(Plugin plugin, PluginInspector inspector);
+
+        void loadAllMessages(Plugin plugin);
+
         boolean exists(String path);
         
         String get(String path, Var... vars);

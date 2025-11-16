@@ -6,7 +6,7 @@ import fr.ladder.polyglot.Messages;
 import fr.ladder.polyglot.Var;
 import fr.ladder.reflex.Reflex;
 import fr.ladder.reflex.PluginInspector;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,35 +19,40 @@ import java.util.regex.Pattern;
 
 public class PolyglotMessages implements Messages.Implementation {
 
-    private final JavaPlugin _engine;
+    private final Plugin _engine;
 
     private final Map<String, String> _messages;
 
     private final Collection<Var> defaultVars = new ArrayList<>();
 
-    public PolyglotMessages(JavaPlugin engine) {
+    public PolyglotMessages(Plugin engine) {
         _engine = engine;
         _messages = new HashMap<>();
     }
 
-    public void loadAllMessages(JavaPlugin plugin) {
+    public void loadAllMessages(Plugin plugin, PluginInspector inspector) {
         // fetch language from config
         final String language = _engine.getConfig()
                 .getString("language", "fr")
                 .toLowerCase();
 
-        try(PluginInspector inspector = Reflex.getInspector(plugin)) {
-            final Pattern pattern = Pattern.compile("lang/" + language + "/.*\\.json");
-            // fetch all lang files
+        final Pattern pattern = Pattern.compile("lang/" + language + "/.*\\.json");
+        // fetch all lang files
 
-            int previousSize = _messages.size();
-            inspector.getResources(pattern).forEach(resource -> this.loadAllMessages(plugin, resource));
-            plugin.getLogger().info("| All messages has been successfully loaded.");
-            plugin.getLogger().info("| Number of loaded messages: " + (_messages.size() - previousSize));
+        int previousSize = _messages.size();
+        inspector.getResources(pattern).forEach(resource -> this.loadAllMessages(plugin, resource));
+        plugin.getLogger().info("| All messages has been successfully loaded.");
+        plugin.getLogger().info("| Number of loaded messages: " + (_messages.size() - previousSize));
+
+    }
+
+    public void loadAllMessages(Plugin plugin) {
+        try(PluginInspector inspector = Reflex.getInspector(plugin)) {
+            this.loadAllMessages(plugin, inspector);
         }
     }
 
-    private void loadAllMessages(JavaPlugin plugin, String filename) {
+    private void loadAllMessages(Plugin plugin, String filename) {
         try(InputStream inputStream = plugin.getResource(filename)) {
             if(inputStream == null) {
                 plugin.getLogger().warning("| File '" + filename + "' wasn't found.");
