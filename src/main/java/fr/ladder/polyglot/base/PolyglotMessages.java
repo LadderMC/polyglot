@@ -31,7 +31,7 @@ public class PolyglotMessages implements Messages.Implementation {
     }
 
     public void loadAllMessages(Plugin plugin, PluginInspector inspector) {
-        // fetch language from config
+        plugin.getLogger().info("Loading all messages with Polyglot:");
         final String language = _engine.getConfig()
                 .getString("language", "fr")
                 .toLowerCase();
@@ -67,7 +67,7 @@ public class PolyglotMessages implements Messages.Implementation {
                 plugin.getLogger().warning("| File '" + filename + "' has a bad json syntax.");
             }
         } catch(IOException e) {
-            plugin.getLogger().warning("An error occurred while loading lang file: " + filename);
+            plugin.getLogger().warning("| An error occurred while loading lang file: " + filename);
         }
     }
 
