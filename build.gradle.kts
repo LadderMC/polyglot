@@ -1,8 +1,8 @@
 plugins {
     id("java")
     id("idea")
-    id("fr.ladder.releasr") version "1.0.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("fr.ladder.releasr") version "0.1.0"
+    id("com.gradleup.shadow") version "9.3.2"
 }
 
 group = "fr.ladder"
@@ -23,6 +23,11 @@ dependencies {
     compileOnly("fr.snowtyy", "papermc", "1.8.8")
 }
 
+releasr {
+    url = "https://repo.lylaw.fr/repository/maven-releases/"
+    username = findProperty("REPO_USER") as String? ?: System.getenv("repoUser")
+    password = findProperty("REPO_PASSWORD") as String? ?: System.getenv("repoPassword")
+}
 
 tasks.shadowJar {
     archiveClassifier.set("")
