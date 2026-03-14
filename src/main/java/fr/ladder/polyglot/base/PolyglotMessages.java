@@ -19,31 +19,29 @@ import java.util.regex.Pattern;
 
 public class PolyglotMessages implements Messages.Implementation {
 
-    private final Plugin _engine;
+    private final Plugin engine;
 
-    private final Map<String, String> _messages;
+    private final Map<String, String> messages;
 
     private final Collection<Var> defaultVars = new ArrayList<>();
 
     public PolyglotMessages(Plugin engine) {
-        _engine = engine;
-        _messages = new HashMap<>();
+        this.engine = engine;
+        messages = new HashMap<>();
     }
 
     public void loadAllMessages(Plugin plugin, PluginInspector inspector) {
-        plugin.getLogger().info("Loading all messages with Polyglot:");
-        final String language = _engine.getConfig()
+        plugin.getLogger().info("Load messages with Polyglot:");
+        final String language = engine.getConfig()
                 .getString("language", "fr")
                 .toLowerCase();
 
         final Pattern pattern = Pattern.compile("lang/" + language + "/.*\\.json");
-        // fetch all lang files
 
-        int previousSize = _messages.size();
+        int previousSize = messages.size();
         inspector.getResources(pattern).forEach(resource -> this.loadAllMessages(plugin, resource));
         plugin.getLogger().info("| All messages has been successfully loaded.");
-        plugin.getLogger().info("| Number of loaded messages: " + (_messages.size() - previousSize));
-
+        plugin.getLogger().info("| Number of loaded messages: " + (messages.size() - previousSize));
     }
 
     public void loadAllMessages(Plugin plugin) {
@@ -79,11 +77,11 @@ public class PolyglotMessages implements Messages.Implementation {
                 if(i != array.size() - 1)
                     message.append("\n");
             }
-            _messages.put(path.substring(1), message.toString());
+            messages.put(path.substring(1), message.toString());
         } else if(element instanceof JsonObject obj) {
             obj.entrySet().forEach(member -> this.load(path + "." + member.getKey(), member.getValue()));
         } else if(element instanceof JsonPrimitive primitive && primitive.isString()) {
-            _messages.put(path.substring(1), element.getAsString());
+            messages.put(path.substring(1), element.getAsString());
         }
     }
 
@@ -101,12 +99,12 @@ public class PolyglotMessages implements Messages.Implementation {
 
     @Override
     public boolean exists(String path) {
-        return _messages.containsKey(path);
+        return messages.containsKey(path);
     }
 
     @Override
     public String get(String path, Var... vars) {
-        String message = _messages.get(path);
+        String message = messages.get(path);
         if(message == null)
             throw new IllegalArgumentException("Missing message for the path: \"" + path + "\"");
 
