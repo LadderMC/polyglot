@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("idea")
-    id("fr.ladder.releasr") version "0.2.0"
+    id("fr.ladder.releasr") version "0.3.0"
     id("com.gradleup.shadow") version "9.3.2"
 }
 
@@ -16,12 +16,14 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains", "annotations", "24.0.1")
-    implementation("org.slf4j", "slf4j-simple", "1.6.1")
+    implementation("org.jetbrains:annotations:24.0.1")
+    implementation("org.slf4j:slf4j-simple:1.6.1")
 
-    compileOnly("fr.snowtyy", "papermc", "1.8.8")
+    compileOnly("fr.snowtyy:papermc:1.8.8")
 
-    implementation("fr.ladder", "reflex", "0.1.0-69b336c5-main-1f651be")
+    implementation("fr.ladder:reflex:0.1.0-69b336c5-main-1f651be")
+
+    testCompileOnly("fr.snowtyy:papermc:1.8.8")
 }
 
 releasr {

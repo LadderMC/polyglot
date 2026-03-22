@@ -1,62 +1,81 @@
 package fr.ladder.polyglot;
 
-import fr.ladder.reflex.PluginInspector;
+import fr.ladder.polyglot.impl.PolyglotMessageLoader;
+import fr.ladder.polyglot.impl.PolyglotMessageStore;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.PriorityQueue;
 
-public abstract class Messages {
-    
-    private static Implementation implementation;
+public final class Messages {
+
+    private static volatile MessageStore messageStore = new PolyglotMessageStore();
+
+    private static volatile MessageLoader messageLoader = new PolyglotMessageLoader();
+
+    private static final PriorityQueue<WeightedResolver> languageResolvers = new PriorityQueue<>();
 
     private Messages() {
         throw new IllegalAccessError("This is a static class and cannot be instantiated");
     }
 
-    public static void setImplementation(Implementation impl) {
-        implementation = impl;
-    }
-    
-    public static void loadAllMessages(Plugin plugin, PluginInspector inspector) {
-        implementation.loadAllMessages(plugin, inspector);
+    public static void overrideStore(MessageStore messageStore) {
+        Messages.messageStore = messageStore;
     }
 
-    public static void loadAllMessages(Plugin plugin) {
-        implementation.loadAllMessages(plugin);
+    public static void overrideLoader(MessageLoader messageLoader) {
+        Messages.messageLoader = messageLoader;
     }
 
-    public static boolean exists(String path) {
-        return implementation.exists(path);
-    }
-    
-    public static String get(String path, Var... vars) {
-        return implementation.get(path, vars);
+    public static void addResolver(LanguageResolver resolver, int weight) {
+        languageResolvers.add(new WeightedResolver(resolver, weight));
     }
 
-    public static String[] array(String path, Var... vars) {
-        return implementation.array(path, vars);
+    public static void loadMessages(Plugin plugin) {
+        messageLoader.loadMessages(messageStore, plugin);
     }
 
-    public static List<String> list(String path, Var... vars) {
-        return List.of(implementation.array(path, vars));
+    public static boolean exists(Object context, String path) {
+        return messageStore.exists(resolveLanguage(context), path);
+    }
+
+    public static String get(Object context, String path, Var... vars) {
+        return messageStore.get(resolveLanguage(context), path, vars);
+    }
+
+    public static String[] array(Object context, String path, Var... vars) {
+        return messageStore.array(resolveLanguage(context), path, vars);
+    }
+
+    public static List<String> list(Object context, String path, Var... vars) {
+        return messageStore.list(resolveLanguage(context), path, vars);
     }
 
     public static void addDefaultVariable(String key, Object value) {
-        implementation.addDefaultVariable(key, value);
+        messageStore.addDefaultVariable(key, value);
     }
-    
-    public interface Implementation {
 
-        void loadAllMessages(Plugin plugin, PluginInspector inspector);
+    public static void addDefaultVariableMessage(String key, String path, Var... vars) {
+        messageStore.addDefaultVariableMessage(key, path, vars);
+    }
 
-        void loadAllMessages(Plugin plugin);
+    private record WeightedResolver(LanguageResolver resolver, int weight) implements Comparable<WeightedResolver> {
 
-        boolean exists(String path);
-        
-        String get(String path, Var... vars);
-        
-        String[] array(String path, Var... vars);
+        @Override
+        public int compareTo(WeightedResolver other) {
+            return Integer.compare(other.weight, this.weight);
+        }
 
-        void addDefaultVariable(String key, Object value);
+    }
+
+    private static String resolveLanguage(Object context) {
+        for (WeightedResolver resolver : languageResolvers) {
+            Optional<String> lang = resolver.resolver().resolve(context);
+            if (lang.isPresent()) {
+                return lang.get();
+            }
+        }
+        throw new IllegalStateException("No language resolver could determine the language");
     }
 }

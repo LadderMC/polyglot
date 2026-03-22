@@ -1,0 +1,13 @@
+{
+  "fr.ladder.polyglot.test": {
+    "common_message": "message commun",
+    "second": {
+      "common_message": "deuxième message commun"
+    },
+    "list": [
+      "première ligne",
+      "deuxième ligne",
+      "troisième ligne"
+    ]
+  }
+}

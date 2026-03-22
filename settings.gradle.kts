@@ -10,3 +10,5 @@ pluginManagement {
         }
     }
 }
+
+include("sample")

@@ -1,0 +1,4 @@
+name: Sample-Polyglot
+version: ${version}
+author: Snowtyy
+main: fr.ladder.polyglot.sample.SamplePlugin
