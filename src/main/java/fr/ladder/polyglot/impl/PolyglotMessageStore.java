@@ -37,6 +37,17 @@ public class PolyglotMessageStore implements MessageStore {
     }
 
     @Override
+    public Map<String, String> getAll(String path, Var... vars) {
+        Map<String, String> result = new HashMap<>();
+        messages.forEach((language, map) -> {
+            String message = this.formatMessage(language, map.getOrDefault(path, ""), vars);
+            result.put(language, message);
+        });
+
+        return result;
+    }
+
+    @Override
     public String[] array(String language, String path, Var... vars) {
         return this.get(language, path, vars).split("\n");
     }

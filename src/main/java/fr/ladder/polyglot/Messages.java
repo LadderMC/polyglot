@@ -5,6 +5,7 @@ import fr.ladder.polyglot.impl.PolyglotMessageStore;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.PriorityQueue;
 
@@ -42,6 +43,10 @@ public final class Messages {
 
     public static String get(Object context, String path, Var... vars) {
         return messageStore.get(resolveLanguage(context), path, vars);
+    }
+
+    public static Map<String, String> getAll(String path, Var... vars) {
+        return messageStore.getAll(path, vars);
     }
 
     public static String[] array(Object context, String path, Var... vars) {

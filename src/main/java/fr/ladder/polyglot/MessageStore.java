@@ -1,6 +1,7 @@
 package fr.ladder.polyglot;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Snowtyy
@@ -10,6 +11,8 @@ public interface MessageStore {
     boolean exists(String language, String path);
 
     String get(String language, String path, Var... vars);
+
+    Map<String, String> getAll(String path, Var... vars);
 
     String[] array(String language, String path, Var... vars);
 
